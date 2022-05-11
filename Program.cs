@@ -22,9 +22,10 @@ do // while que faz repetir o jogo todo
         Console.WriteLine("Resultado final: " + ganhador + " ganhou."); // Declarando vencedor
         break;
     }
-    else if (ganhador == "empate") // Declarando quando foi impate
+    else if (ganhador == "empate") // Declarando quando for impate
     {
         Console.WriteLine("Empate!!");
+        break;
     }
 
 } while (true);
@@ -54,38 +55,32 @@ static void mostraJogo(string[,] matriz) {
 
 
 static string[,] jogadas(string[,] matriz, string numJogador)
-{   
-    string numComputador = jogadaComputador(matriz, int.Parse(numJogador)); // recebendo e verificando se o número
-                                                    // do computador existe
+{
     if (verificacao(matriz, int.Parse(numJogador))) { // verificando se o número digitado pelo jogador existe
-        for (int i = 0; i < 3; i++)                   // e trocar os valores se existe
-        {
-            for (int j = 0; j < 3; j++)
-            {
-                if (matriz[i, j] == numJogador) // verificando se é a posição do jogador
-                {
-                    matriz[i, j] = "X"; // alterando o valor se for a posição
-                }
-                else if (matriz[i, j] == numComputador) // verificando se é a posição do computador
-                {
-                    matriz[i, j] = "O"; // alterando o valor se for a posição
-                }
-            }
-        }
-    } else
+        
+        matriz = fazerJogada(matriz, numJogador, "X");
+    } 
+    else
     {
         Console.WriteLine("Posição inválida!"); // caso não acha a posição, imprime "Posição inválida"
     }                                           // na tela
+
+
+    if (!valoresCompletos(matriz))
+    {
+        string numComputador = jogadaComputador(matriz); // recebendo e verificando se o número do computador existe
+        matriz = fazerJogada(matriz, numComputador, "O");
+    }
 
     return matriz; // retorna a matriz
 }
 
 
-static string jogadaComputador(string[,] matriz, int numJogador) { // função para fazer a jogada do computador
+static string jogadaComputador(string[,] matriz) { // função para fazer a jogada do computador
     Random valorAleatorio = new Random();
     int numComputador = valorAleatorio.Next(1, 10); // criando um valor random entre 1 e 10
 
-    while (!verificacao(matriz, numComputador) || numComputador == numJogador) // verificando se o número do computador é válido
+    while (!verificacao(matriz, numComputador)) // verificando se o número do computador é válido
     {
         numComputador = valorAleatorio.Next(1, 10);  // será trocado até for válido
     }
@@ -133,21 +128,49 @@ static string verificacaoVitoria(string[,] matriz)
                 ganhador = matriz[0, i]; // atribuindo o ganhador caso tiver passado da condição
             }
         }
+        empate = valoresCompletos(matriz);
+    }
 
-        for (int i = 0; i < 3; i++) 
-        {
-            for (int j = 0; i < 3; i++) {
-                if (matriz[i, j] != "O" && matriz[i, j] != "X") // verificando se não deu empate
-                {  
-                    empate = false; // caso não, valor atrivuido é falso
-                }
-            }
-        }
+    if (empate && ganhador == "") // se empate for verdadeiro ele retorna o valor "empate"
+    {
+        return "empate";
     }
-    if (empate) { // se empate for verdadeiro ele retorna o valor "empate"
-        return ganhador = "empate"; 
-    }
+
     return ganhador;
 }
 
+static bool valoresCompletos (string[,] matriz) 
+{
+    bool completo = true;
+
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < 3; j++)
+        {
+            if (matriz[i, j] != "O" && matriz[i, j] != "X") // verificando se não deu empate
+            {
+                completo = false; // caso não, valor atribuido é falso
+            }
+        }
+    }
+    return completo;
+}
+
+
+static string[,] fazerJogada(string[,] matriz, string jogada, string jogador)
+{
+    // jogador = "X" ou "O"
+    // jogada = 1 a 9
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < 3; j++)
+        {
+            if (matriz[i, j].Equals(jogada))
+            {
+                matriz[i, j] = jogador;
+            }
+        }
+    }
+    return matriz;
+}
 
